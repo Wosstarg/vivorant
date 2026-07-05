@@ -2,16 +2,15 @@ import sqlite3
 from pathlib import Path
 
 # ================= НАСТРОЙКИ =================
-DB_PATH = r"C:\ProgramData\Locktime\NetLimiter\5\Stats\nlstats.db"  # ← проверь путь!
-OUTPUT_DIR = Path("rule-sets")
-FILENAME = "vivox_valorant.mrs"
+DB_PATH = r"C:\ProgramData\Locktime\NetLimiter\5\Stats\nlstats.db"  # ← измени, если путь другой
+OUTPUT_DIR = Path(r"C:\Users\Wosstarg\Documents\GitHub\vivorant\rule-sets")
 # ============================================
 
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
-ips = set()
 domains = set()
+ips = set()
 
 print("Извлекаем данные Valorant...")
 
@@ -34,18 +33,13 @@ conn.close()
 
 print(f"Доменов: {len(domains)} | IP: {len(ips)}")
 
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Создаём .mrs файл
-with open(OUTPUT_DIR / FILENAME, "w", encoding="utf-8") as f:
-    f.write("payload:\n")
-    
-    # Сначала IP (как ты показал)
-    for ip in sorted(ips):
-        f.write(f"  - '{ip}/32'\n")
-    
-    # Потом домены (для domain behavior)
+with open(OUTPUT_DIR / "vivox_valorant.txt", "w", encoding="utf-8") as f:
+    f.write("# Valorant + Vivox rules from Netlimiter\n\n")
     for d in sorted(domains):
-        f.write(f"  - 'domain:{d}'\n")
+        f.write(f"domain:{d}\n")
+    for ip in sorted(ips):
+        f.write(f"ipcidr:{ip}/32\n")
 
-print(f"Файл создан: {OUTPUT_DIR / FILENAME}")
+print(f"Файл успешно сохранён в:\n{OUTPUT_DIR / 'vivox_valorant.txt'}")
