@@ -10,8 +10,8 @@ FILENAME = "vivox_valorant.mrs"
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
-ips = set()
 domains = set()
+ips = set()
 
 print("Извлекаем данные Valorant...")
 
@@ -36,16 +36,18 @@ print(f"Доменов: {len(domains)} | IP: {len(ips)}")
 
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-# Создаём .mrs файл
-with open(OUTPUT_DIR / FILENAME, "w", encoding="utf-8") as f:
+# === Файл с IP ===
+with open(OUTPUT_DIR / "vivox_ip.mrs", "w", encoding="utf-8") as f:
     f.write("payload:\n")
-    
-    # Сначала IP (как ты показал)
     for ip in sorted(ips):
         f.write(f"  - '{ip}/32'\n")
-    
-    # Потом домены (для domain behavior)
-    for d in sorted(domains):
-        f.write(f"  - 'domain:{d}'\n")
 
-print(f"Файл создан: {OUTPUT_DIR / FILENAME}")
+# === Файл с доменами ===
+with open(OUTPUT_DIR / "vivox_domain.mrs", "w", encoding="utf-8") as f:
+    f.write("payload:\n")
+    for d in sorted(domains):
+        f.write(f"  - '+.{d}'\n")          # добавляем +. для поддоменов
+
+print("Создано 2 файла:")
+print(" - rule-sets/vivox_ip.mrs")
+print(" - rule-sets/vivox_domain.mrs")
